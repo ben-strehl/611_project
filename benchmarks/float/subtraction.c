@@ -7,7 +7,7 @@ int main () {
     float subtractor = 1000.0;
 
     for(int i =0; i < 10000; i++){
-        subtractor += static_cast <float> (rand() / (static_cast <float> (RAND_MAX / 1000.0)));
+        subtractor += (rand() / (  (RAND_MAX / 1000.0)));
         subtractor = 1000.0;
     }
 
