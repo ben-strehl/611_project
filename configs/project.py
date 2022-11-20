@@ -6,9 +6,9 @@ import argparse
 
 parser = argparse.ArgumentParser(description='A simple system with a 2-level cache.')
 parser.add_argument("binary", default="tests/test-progs/hello/bin/x86/linux/hello", nargs="?", type=str, help="Path to the binary to execute.")
-parser.add_argument("--l1i_size", help=f"L1 instruction cache size. Default 16kB")
-parser.add_argument("--l1d_size", help="L1 data cache size. Default 64kb")
-parser.add_argument("--l2_size", help="L2 cache size. Default 256kB")
+parser.add_argument("--l1_size", help="L1 instruction and data cache size. Default 1kB")
+parser.add_argument("--latency", help="L1 cache latency. Default 2 cycles")
+parser.add_argument("--cpu_clock", help="CPU clock speed. Default 1GHz")
 options = parser.parse_args()
 
 #Set up our simple system
@@ -19,9 +19,17 @@ system.clk_domain.clock = '1GHz'
 system.clk_domain.voltage_domain = VoltageDomain()
 
 system.mem_mode = 'timing'
-system.mem_ranges = [AddrRange('512MB')]
+system.mem_ranges = [AddrRange('8GB')]
 
-system.cpu = TimingSimpleCPU()
+system.cpu = O3CPU()
+
+system.cpu_voltage_domain = VoltageDomain()
+system.cpu_clk_domain = SrcClockDomain()
+if options and options.cpu_clock:
+    system.cpu_clk_domain.clock = options.cpu_clock,
+else:
+    system.cpu_clk_domain.clock = "1GHz"
+system.cpu_clk_domain.voltage_domain = system.cpu_voltage_domain
 
 system.cpu.icache = L1ICache(options)
 system.cpu.dcache = L1DCache(options)
@@ -34,7 +42,7 @@ system.l2bus = L2XBar()
 system.cpu.icache.connectBus(system.l2bus)
 system.cpu.dcache.connectBus(system.l2bus)
 
-system.l2cache = L2Cache(options)
+system.l2cache = L2Cache()
 system.l2cache.connectCPUSideBus(system.l2bus)
 system.membus = SystemXBar()
 system.l2cache.connectMemSideBus(system.membus)
