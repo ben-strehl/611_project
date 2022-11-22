@@ -29,7 +29,8 @@ stats[6]='stats_flt_sub.txt'
 stats[7]='stats_flt_div.txt'
 
 #Make output directories if they don't exist
-[ -d output ] || mkdir output
+rm -rf output
+mkdir output
 for depth in "${depths[@]}"; do
     [ -d output/$depth ] || mkdir output/$depth
 done
