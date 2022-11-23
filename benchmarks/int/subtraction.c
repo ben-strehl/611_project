@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define SIZE 1000
+#define SIZE 500
 
 int main () {
     srand(time(NULL));
